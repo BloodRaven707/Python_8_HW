@@ -1,0 +1,245 @@
+"""
+view.py
+
+main_menu: (jurnal_name  = "", jurnal_open = False), jurnal_edited = False
+## Jurnal:
+- 'Открыть журнал' = Открыть Журнал > jurnal_open = True > jurnal_name  != ""
+- 'Создать журнал' = Создаст новый файл и все...
+
+#### Реализовать на уровне view.py и controller.py ####
+- "Показать все журналы"
+- 'Завершить работу' = Выйти
+
+
+main_menu: (jurnal_name  != "" and jurnal_open != False), jurnal_edited = False
+## Jurnal:
+- 'Открыть журнал' = Открыть Журнал > jurnal_open = True > jurnal_name  != ""
+- 'Создать журнал' = Создаст новый файл и все...
+- 'Сохранить журнал' = Сохранить Журнал > jurnal_name  != ""
+- 'Закрыть журнал' = Сохранить Журнал + Закрыть Журнал > jurnal_open = False
+*****
+## Subject:
+- "Показать все предметы"
+- 'Выбрать предмет' = Открыть Предмет > subject_open = True > subject_name != ""
+- 'Создать новый предмет' = Создать Предмет > subject_open = True > subject_name != ""
+- 'Отредактировать предмет' = Изменить Предмет > subject_name != ""
+*****
+#### Реализовать на уровне view.py и controller.py ####
+- 'Завершить работу' = Сохранить/Не_сохранить + Закрыть + Выйти
+
+
+subject_menu:
+## Subject:
+- "Сменить предмет" > Открыть Предмет > subject_name != ""
+- "Завершить предмет" > subject_open = False > subject_name != ""
+*****
+## Learner:
+- 'Показать список учеников'
+- 'Вызвать ученика' > learner = ""
+- 'Добавить ученика'
+- 'Отредактировать ученика'
+- 'Удалить ученика'
+- 'Поиск ученика'
+## Marks:
+- 'Добавить оценку'
+- 'Удалить оценку'
+- 'Изменить оценку'
+*****
+#### Реализовать на уровне view.py и controller.py ####
+- 'Завершить работу' = Сохранить/Не_сохранить + Закрыть + Выйти
+
+
+
+controller.py
+
+## Jurnal:
+- 'Открыть журнал' = Открыть Журнал > jurnal_open = True > jurnal_name  != ""
+- 'Создать журнал' = Создать Журнал > jurnal_open = True
+- 'Сохранить журнал' = Сохранить Журнал > jurnal_name  != ""
+- 'Закрыть журнал' = Сохранить Журнал + Закрыть Журнал > jurnal_open = False
+
+## Subject:
+- "Показать все предметы"
+- 'Выбрать предмет' = Открыть Предмет > subject_open = True > subject_name != ""
+- 'Создать новый предмет' = Создать Предмет > subject_open = True > subject_name != ""
+- 'Отредактировать предмет' = Изменить Предмет > subject_name != ""
+- "Сменить предмет" > Открыть Предмет > subject_name != ""
+- "Завершить предмет" > subject_open = False > subject_name != ""
+
+## Learner:
+- 'Показать список учеников'
+- 'Вызвать ученика' > learner = ""
+- 'Добавить ученика'
+- 'Отредактировать ученика'
+- 'Удалить ученика'
+- 'Поиск ученика'
+
+## Marks:
+- 'Добавить оценку'
+- 'Удалить оценку'
+- 'Изменнить оценку'
+
+#### Реализовать на уровне view.py и controller.py ####
+- "Показать все журналы"
+- 'Завершить работу' = Сохранить/Не_сохранить + Закрыть + Выйти
+
+
+
+model.py
+
+Доступные controller.py переменные из model.py
+    model.jurnal_name     = ""     /  != ""
+    # Путь к открытой базе дынных
+
+    model.jurnal_select   = False  /  True
+    # Состояние выбран или нет журнал
+
+    model.jurnal_edited   = False  /  True
+    # Состояние изменен или нет журнал
+
+    model.jurnal          = {}
+    # Обект jurnal # {str: srt: list[int]}
+
+    model.subject_select  = False  /  True
+    # Состояние выбран или нет предмет
+
+    model.subject_name    = ""     /  != ""
+    # Наименование текущего выбранного предмета
+
+    model.subject          = {}
+    # Обект subject # {srt: list[int]}
+
+    model.learner_name     = ""    /  != ""
+    # Наименование текущего выбранного ученика
+
+
+
+Используемые структыры для передачи данных:
+    # Объект типа Jurnal
+    # { "subject_name": { "learner_name": [ int, int ],
+    #                     "learner_name": [ int, int ] },
+    # { "subject_name": { "learner_name": [ int, int ],
+    #                     "learner_name": [ int, int ] } }
+    #
+    # model.jurnal_name     = ""     /  != ""
+    # model.jurnal_select   = False  /  True
+    # model.jurnal_edited   = False  /  True
+
+
+    # Объект типа Subject
+    # { "learner_name": [ int, int ],
+    #   "learner_name": [ int, int ] }
+    #
+    # model.subject_select  = False  /  True
+    # model.subject_name    = ""     /  != ""
+
+
+    # Объект типа Learner
+    # [ int, int ]
+    #
+    # model.learner_name != ""
+
+
+
+Доступные controller.py функции из model.py
+    ## Отдает список имен с журналами в "папке"
+    jurnals_get() -> list[str]
+
+
+    ## Jurnal:
+    'Открыть журнал' = Открыть Журнал
+    jurnal_open( class_name: str ) -> jurnal
+    # -> model.jurnal_name   != ""
+    # -> model.jurnal_select = True
+
+    - 'Создать журнал' = Создаст новый файл и все...
+    jurnal_create( class_name: str )
+
+    - 'Сохранить журнал' = Сохранить Журнал
+    jurnal_save( class_name: str ) -> jurnal  # {}
+    # -> model.jurnal_name   != ""
+    # -> model.jurnal_edited = False
+
+    - 'Закрыть журнал' = Сохранить Журнал + Закрыть Журнал
+    jurnal_close( class_name: str )
+    # -> model.jurnal_name   = ""
+    # -> model.jurnal_select = False
+    # -> model.jurnal_edited = False
+
+
+    ## Subject:
+    - "Показать все предметы"
+    subjects_get() -> list[str]
+
+    - 'Выбрать предмет' = Открыть Предмет
+    - "Сменить предмет" > Открыть Предмет
+    subject_open( subject_name: str ) -> subject
+    # -> model.subject_name   != ""
+    # -> model.subject_select = True
+
+    - 'Создать новый предмет' = Создать Предмет
+    subject_create( subject_name: str )
+    # -> model.jurnal_edited  = True
+
+    - 'Отредактировать предмет' = Изменить Предмет
+    subject_edit( subject_name: str ) -> subject  # {}
+    # -> model.jurnal_edited  = True
+
+    - "Завершить предмет" > Выход в main_menu
+    subject_close( subject_name: str )
+    # -> model.subject_name   = ""
+    # -> model.subject_select = False
+
+
+    ## Learner:
+    - 'Показать список учеников' == # Отдает предмет если он выбран
+    learners_get() -> {}
+
+    if model.subject_name != "" and model.subject_select = True
+        _subject_get( subject_name: str ) -> subject # {key: [], key: []}
+
+
+    - 'Вызвать ученика'
+    learner_get( learner_name: str ) -> learner_name, list # Имя и оценки
+    # -> model.learner_name    != ""
+
+    - 'Добавить ученика'
+    learner_create( learner_name: str ) -> list[str]
+    # -> model.jurnal_edited  = True
+
+    - 'Отредактировать ученика'
+    learner_edit( learner_name: str ) -> list[str]
+
+    - 'Удалить ученика'
+    learner_delete( learner_name: str ) -> list[str]
+
+    - 'Поиск ученика'
+    learner_find( learner_name: str ) -> list[str]
+
+
+    ## Marks:
+    - 'Добавить оценку'
+    mark_add( learner_name: str, mark: int ) -> learner_name, list # Имя и оценки
+
+    - 'Удалить оценку'
+    mark_del( learner_name: str, mark: int ) -> learner_name, list # Имя и оценки
+
+    - 'Изменнить оценку'
+    mark_upd( learner_name: str, mark: int, new_mark: int ) -> learner_name, list # Имя и оценки
+
+
+#### Реализовать на уровне view.py и controller.py ####
+- "Показать все журналы"
++ 'Завершить работу' = Сохранить/Не_сохранить + Закрыть + Выйти
+
+
+    # Отдает журнал если он выбран
+    if model.jurnal_name  != "" or model.jurnal_select = True
+        _jurnal_get( class_name: str ) -> jurnal # {_key: {key: [], key: []}, _key: {key: [], key: []}}
+        # model.jurnal_select = True
+
+    # Отдает оценки если выбран учащийся
+    if model.learner_name != ""
+        _marks_get( subject_name: str, learner_name: str ) -> list # [int, int]
+
+"""

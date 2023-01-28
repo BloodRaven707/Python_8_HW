@@ -1,0 +1,535 @@
+from os.path import isfile
+from random import choice, randrange
+import json
+def save_file(file_name, clas):
+    with open(file_name, 'w', encoding='UTF-8') as f:
+        for i in range(len(clas)):
+            s = clas[i][0] + '.'
+            subj = []
+            for k, v in clas[i][1].items():
+                subj.append(f"{k}:{','.join(v)}")
+            s += ';'.join(subj)
+            f.write(f'{s}')
+def print_class(clas, subj):#
+    for i in range(len(clas)):
+        s = clas[i][0] + ': '
+        #v = clas[i][1][subj]
+        s += f"[{', '.join(clas[i][1][subj])}]"
+        print(f'{s}')
+#def add_mark(clas, call_pupil, subj, eval):
+#    clas[call_pupil][subj] найти по индексу ученика, потом предмет, потом оценку
+def main_seminar():
+    clas = open_file('7b.txt')
+    subj = input('Введите название предмета: ')
+    #save_file('8b.txt', clas)
+    print_class(clas, subj)
+    call_pupil = ""
+    while call_pupil == "":
+        call_pupil = input('Кто пойдет к доске: ')
+        for s in clas:
+            if s[0] == call_pupil:
+                break
+            else:
+                print(f'{call_pupil} отсутствует в классе, нужно вызвать другого')
+            call_pupil = ""
+
+    evall = input('Оценка: ')
+    print(call_pupil, evall)
+    # Добавить оценку
+# main_seminar()
+def open_file( file_name ):
+    expansion = file_name.split(".")[-1]
+    if expansion == "json":
+        with open( file_name, encoding="UTF-8" ) as f:
+            lts = json.load( f )
+    elif expansion == "csv":
+        pass
+    elif expansion == "txt":
+        pass
+    return lts
+    # print("\n", lts, "\n")
+# print( open_file( "t.json" ) )
+def save_file( file_name, data ):
+    expansion = file_name.split(".")[-1]
+    if expansion == "json":
+        with open( file_name, "w", encoding="UTF-8" ) as f:
+            json.dump( data, f )
+# data = open_file( "t.json" )
+# save_file( "tt.json", data )
+# print( data )
+def open_file( file_name ):
+    with open( file_name, encoding='UTF-8') as f:
+        clas = []
+        for i, line in enumerate(f):
+            name, subjects = line.strip().split('.')
+            clas.append([name,{}])
+            for subject in subjects.split(';'):
+                journ=subject.split(':')
+                clas[i][1][journ[0]] = journ[1].split(',')
+        print(clas)
+    return clas
+def jurnal_open( class_name: str ) -> dict:
+    global jurnal, jurnals
+    if class_name in jurnals:
+        jurnal = open_file(class_name)
+        return jurnal; print( jurnal_open( jurnals[1] ) )
+def open_file( class_name: str ) -> dict: # Открытие файла
+    global jurnal, jurnal_name, subjects
+    new_jurnal = {}
+    file_name = f"logs\\{ class_name }.json"
+    if not isfile( file_name ):
+        return new_jurnal
+    expansion = file_name.split(".")[-1]
+    try:
+        with open( file_name, encoding="UTF-8" ) as file:
+            new_jurnal = json_load( file )
+    except:
+        return new_jurnal
+    jurnal_name = file_name
+    jurnal = new_jurnal
+    subjects = list(jurnal)
+    return new_jurnal; print( "" ); print( "7а" ); print( *list(open_file( "7а" ).items()), sep="\n" ); print( "" )
+def show_progress_lesson(journal: dict, lesson: str):
+    print(f'\nУспеваемость учеников {class_name.upper()} класса')
+    print(f'Дисциплина: {lesson.lower()}\n')
+    i = 0
+    for key, value in journal[lesson].items():
+        i += 1
+        print(f'\t{i}. {key}: ', end=' ')
+        print(*value)
+def control() -> int:
+    while True:
+        try:
+            mark = int(input('Введите полученную отметку: '))
+            if mark not in [1, 2, 3, 4, 5]:
+                print('Введите отметку от 1 до 5.')
+            elif mark in [1, 2, 3, 4, 5]:
+                return mark
+        except ValueError:
+            print('Некорректный ввод! Введите число 1 или 5.')
+def show_journal(journal: dict):
+    print(f'\nУспеваемость учеников в {class_name.upper()} классе:\n')
+    for key in journal.keys():
+        print(f'{key}:')
+        j = 0
+        for i, item in journal[key].items():
+            j += 1
+            print(f'\t{j}. {i}: ', end=' ')
+            print(*item)
+        print()
+def get_name() -> str:
+    name = input('Введите фамилию и имя ученика через пробел: ')
+    print()
+    return name.title().strip()
+def get_lesson() -> str:
+    lesson = input('Введите название предмета: ')
+    print()
+    return lesson.capitalize().strip()
+def show_message(text: str):
+    print(text)
+def show_pupil_lessons(journal: dict, name: str):
+    """Вывести успеваемость конкретного ученика по всем предметам"""
+    print(f'Ученик {class_name.upper()} класса {name}')
+    for key in journal.keys():
+        print(f'\t{key}:', end=' ')
+        for i, item in journal[key].items():
+            if i == name:
+                print(*item)
+def show_pupil_lesson(journal: dict, name: str, lesson: str):
+    """Вывести успеваемость конкретного ученика по заданному предмету"""
+    print(f'Ученик {class_name.upper()} класса {name}')
+    print(f'\t{lesson}: ', end=' ')
+    print(*journal[lesson][name])
+def input_comrtmand() -> int:
+    while True:
+        try:
+            menu_list = [
+                'Список всех учеников',
+                'Успеваемость всех учеников по всем дисциплинам',
+                'Успеваемость учеников по предмету',
+                'Контроль знаний ученика',
+                'Выход',
+            ]
+
+            print('\n=========== Главное меню ===========')
+            for i, item in enumerate(menu_list):
+                print(f'\t{i + 1}. {item}')
+
+            command = int(input('\nВведите номер команды: '))
+            if command < 1 or command > 5:
+                print('Введите номер команды от 1 до 5!')
+            else:
+                return command
+        except ValueError:
+            print('Некорректный ввод! Введите число 1 или 5.')
+def show_list_pupils(journal: dict):
+    print(f'\nСписок всех учеников в {class_name.upper()} классе: ')
+    for item in journal.values():
+        i = 0
+        for key in item.keys():
+            i += 1
+            print(f'\t{i}. {key}')
+        break
+def control_knowledge():
+    lesson = view.get_lesson()
+    if model.check_lesson(model.get_journal(), lesson):
+        view.show_message('Кто будет отвечать?')
+        name = view.get_name()
+        if model.check_name(model.get_journal(), name):
+            mark = view.control()
+            model.add_mark(model.get_journal(), mark, lesson, name, PATH_FILE)
+            view.show_pupil_lesson(model.get_journal(), name, lesson)
+        else:
+            view.show_message(TEXT_INFO)
+    else:
+        view.show_message(TEXT_INFO)
+def check_name(journal: dict, name: str):
+    """Проверка есть ли имя ученика в журнале"""
+    flag = False
+    for item in journal.values():
+        for key in item.keys():
+            if name == key:
+                flag = True
+    return flag
+def check_lesson(journal: dict, lesson: str) -> bool:
+    """Проверка есть ли данный предмет в журнале"""
+    flag = False
+    for key in journal.keys():
+        if lesson == key:
+            flag = True
+    return flag
+def check_info(journal: dict, lesson: str, name: str) -> bool:
+    """Проверка дисциплины и имени ученика"""
+    return check_name(journal, name) and check_lesson(journal, lesson)
+def save_changes(journal: dict, path: str):
+    """Сохранить все изменения в файле"""
+    file_string = ''
+    for i in journal.keys():
+        file_string += i + ';'
+        for j in journal[i].keys():
+            file_string += j + ':'
+            for k in range(len(journal[i][j])):
+                file_string += ' ' + str(journal[i][j][k])
+            file_string = file_string + ','
+        file_string = file_string[:-1] + '\n'
+    file_string = file_string[:-1]
+    with open(path, 'w', encoding='UTF-8') as file:
+        file.write(file_string)
+
+https://github.com/ANT050/Primer - view.py версия Антона
+https://github.com/Oleg-GH/Python-Seminars/tree/main/Sem2401_journal1 - controller.py версия Олега
+
+
+def get_journal( journal_name: str = journal_name, new_journal_status: str = new_journal_status ) -> ( bool, int, dict):
+ global journal
+  # авто подключение model.auto_connect = False, нужно функционал для включения
+  # if model.auto_connect:
+    # подключение к заданному журналу
+  if not new_journal_status:
+  # if not new_journal_status and not auto_connect:
+    return False, 0, {} # не подключена БД
+  if new_journal == []:
+    return False, 1, {} # нет предметов
+  new_journal_lite = {}
+  for i in range( len( new_journal ) ):
+    subject_lite = {}
+    subject = new_journal[ i ][ "data" ]  # []?
+    if subject == []: # не учеников, пофиг
+      new_journal_lite[ subject[ i ][ name ] ] = {}
+    else:
+      for j in subject:
+        key, value = get_person_kv
+        subject_lite[ key ] = value
+        # subject_lite[subject[ i ][ name ] + subject[ i ][ lastname ] = subject[ i ][ "marks" ]
+      new_journal_lite[ subject[ i ][ name ] ] = subject_lite
+  return True, 0, new_journal_lite
+
+
+case 2: получить данные ( subject )
+     # открыть БД по определенному классу и конкретному предмету
+     + Сделано... (Проект)
+     view.show_pupils(klass, subject)
+
+## Функция получения предмета
+model.get_subject( subject_name ) -> subject
+#-> ( bool, int, dict ) предмет с учениками
+# subject: # Предмет -> Ученики
+# -> { person1: [ int, int ], person2: [ int, int ] }
+def get_subject( subject_name ) -> ( bool, int, dict )
+  globul subject
+  if new_journal == []:
+    return False, 0, {} # нет предметов
+  subject = []
+  for i in range( len ( new_journal ) ):
+    new_journal[ i ][ "subject" ] == subject_name:
+  subject = new_journal[ i ][ "data" ]  # []?
+      if subject == []:
+        return True, 1, {} # пустой
+      break
+  else:
+    return False, 1, {} # нет предметa
+  subject_lite = {}
+  for i in subject:
+    subject_lite[subject[ i ][ name ] + subject[ i ][ lastname ] = subject[ i ][ "marks" ]
+  return True, 0, subject_lite
+case 3: найти new_journal[ i ][ "data" ][ i ][ name ] + new_journal[ i ][ "data" ][ i ][ lastname ]
+     # найти (вызвать) ученика
+     search = view.search_request()
+     result = model.search_pupil(search)
+     view.show_pupil(result)
+## Функция поиска ученика
+## Функция поиска учеников
+# -> ( bool, int, dict ) предмет с учениками
+# -> { person1: [ int, int ], person2: [ int, int ] }
+# -> { person: [ int, int ] }
+def find_person( name_part, subject_name ):
+  status, code, subject_lite = get_subject( subject_name )
+  if status:
+    if code == 0: искать...
+      persons = {}
+      for person in subject_lite.keys():
+        # if name_part in person: часть имени
+        if name_part == person: полное имя
+          persons[ person ] = subject_lite[ person ]
+      # if persons = {}: не нашел
+      # if len( persons ) > 1: много нашел
+      # else: ок 1 запись...
+      return True, "поиск завершен", persons
+    elif code == 1:
+      return False, "нет учеников", {}
+
+  else:  # status == False
+    if code == 0:
+      return False, "нет предметов", {}
+    elif code == 1:
+      return False, "нет предмета"
+
+  return False, "неизвестный_code", {}
+case 4:
+      # поставить ученику оценку
+      search = view.search_request()
+      result = model.search_pupil(search)
+      model.mark_put(result, mark)
+      view.mark_success()
+      'Оценка внесена в журнал'
+## Функция добавления оценки
+# -> ( bool, int, dict ) предмет с учениками
+# -> { person1: [ int, int ], person2: [ int, int ] }
+def add_mark( subject_name: str, person: str, mark: int ) - subject_lite
+  # dairy = { person: [ int, int ] }
+  status, code, dairy = find_person( person, subject_name )
+  if status: # должен придти 1 элемент
+    dairy[ person ].append(mark)
+    return True, 0, dairy
+  else:
+    return status, code, {}
+
+
+
+
+ case 5:
+     # добавить ученика
+     new_pupil = view.create_pupil()
+     model.school_db.append(new_pupil)
+
+
+## Функция добавления ученика
+# -> ( bool, int, dict ) предмет с учениками
+# -> { person1: [ int, int ], person2: [ int, int ] }
+def add_person( subject_name: str, person: str, marks: list = [] ) - subject_lite
+  subject_lite[person] = marks
+  return True, 0, subject_lite
+
+
+
+
+case 6:
+    # изменить ученика
+    # == удалить + добавить
+    search = view.search_request()
+    result = model.search_pupil(seаrch)
+    confirm = view.confirm_changes(result)
+    if 'n' not in confirm:
+         new_pupil = view.create_pupil()
+         response = model.change_pupil(result,confirm,new_pupil)
+        view.change_success(response)
+
+## Функция переименования ученика
+# person - кого переименовать
+# new_person - как назвать...
+  status, code, marks = del_person( subject_name: str, person: )
+  if status:
+    status, code, subject = add_person( subject_name: str, new_person: str, marks: list = [] )
+
+  return status, code, subject
+
+
+
+
+case 7:
+    # удалить ученика
+    search = view.search_request()
+    # inp.          ex. /str/
+    result = model.search_pupil(search)
+    confirm = view.confirm_changes(result)
+    response = model.delete_contact(result,confirm)
+    view.delete_success(response)
+
+## Функция удаления ученика
+# status, code, marks
+def del_person( subject_name: str, person: ) -> bool, int, dict
+  marks = subject[ person ]
+  del subject[ person ]
+  return True, 0, marks
+
+
+
+case 8:
+    # сохранить класс в файл с БД
+    model.save_db(path)
+    view.save_success()
+
+def save_to_file(new_journal_lite: dict):
+  new_new_journal = []
+  for si, subj_name in enumerate( new_journal_lite ):
+    ## new_journal_lite
+    # si == id
+    # subj_name == name
+    # new_journal_lite[ subj_name ].values() != data[]
+
+Дмитрий || Raven, [26.01.2023 13:18]
+new_new_journal.append({"id": si, "name": subj_name, "data": []})
+    for pi, pers_name in enumerate( new_journal_lite[ subj_name ].values() ):
+      ## subject_lite
+      # pi = id
+      # firstname, lastname = pers_name.split()
+      # subject_lite[ pers_name ] == marks #[]
+      new_new_journal[i]["data"].append( {"id": pi, "firstname": firstname, "lastname": lastname, "marks": subject_lite[ pers_name ]} )
+      with open( file_name, " w", encoding="UTF-8") as f
+          json.dump( f, new_new_journal )
+      new_journal = new_new_journal
+      return True, 0, new_journal
+
+
+## Формат хранения в файле
+## model.new_journal
+[{id: int,
+  name: str,
+  subject: [{id: int,
+                   firstname: str,
+                   lastname: str,
+                   marks: list},
+                   {}]},
+ {}]
+
+## Формат - Кратко
+[{_:_,_:_,_:[{_:_,
+                  _:_,
+                  _:_,
+                  _:[]},
+                 {}]},
+ {}]
+
+
+def save_file(file_name, clas):
+    with open(file_name, 'w', encoding='UTF-8') as f:
+        for i in range(len(clas)):
+            s = clas[i][0] + '.'
+            subj = []
+            for k, v in clas[i][1].items():
+                subj.append(f"{k}:{','.join(v)}")
+            s += ';'.join(subj)
+            f.write(f'{s}')
+
+
+def print_class(clas, subj): # "Название", {ученик: []}
+    for i in range(len(clas)):
+        s = clas[i][0] + ': '
+        #v = clas[i][1][subj]
+        s += f"[{', '.join(clas[i][1][subj])}]"
+        print(f'{s}')
+
+#def add_mark(clas, call_pupil, subj, eval):
+#    clas[call_pupil][subj] найти по индексу ученика, потом предмет, потом оценку
+
+
+dict = {subject: {"student": [marks], student: [marks], student: [marks], student: [marks], student: [marks] },
+        subject: {{"firstname": "", "lastname": ""}: [marks], student: [marks], student: [marks], student: [marks], student: [marks] },
+        subject: {student: [marks], student: [marks], student: [marks], student: [marks], student: [marks] },
+        subject: {student: [marks], student: [marks], student: [marks], student: [marks], student: [marks] } }
+
+{предмет: {ученик: [оценки]}, {ученик: [оценки]}, {ученик: [оценки]},
+ предмет: {ученик: [оценки]}, {ученик: [оценки]}, {ученик: [оценки]}}
+
+[ученик, {предмет: [оценки], предмет: [оценки], предмет: [оценки]},
+ ученик, {предмет: [оценки], предмет: [оценки], предмет: [оценки]}]
+
+
+
+reference_open = False
+reference_file = "путь к файлу"
+
+Открытие файла
+Сохранение файла
+
+Вывод на экран:
+    1. Ученик: [оценки, оценки, оценки, оценки, оценки, оценки, оценки, оценки]
+    2. Ученик: [оценки, оценки, оценки, оценки, оценки, оценки, оценки, оценки]
+    i. Ученик: [оценки, оценки, оценки, оценки, оценки, оценки, оценки, оценки]
+
+                      VIEW                                                     CONTROLLER                                                          MODEL
+                                              <--- while True:
+1. + Выбрать предмет [1, {mat: "Математика"}] ---> [1, {mat: "Математика"}] controller.py  subject = model.get_subject({mat: "Математика"}) ---> get_subject({mat: "Математика"})
+     show_subject(subject)                    <--- view.show_subject(subject)                                                               <--- subject = {}
+                                              <--- while True:
+
+2. + Вызвать {"firstname": "Имя", "lastname": "Фамилия"} ---> [1, {mat: "Математика"}] controller.py  subject = model.get_subject({mat: "Математика"}) ---> get_subject({mat: "Математика"})
+     show_subject(subject)                    <--- view.show_subject(subject)                                                               <--- subject = {}
+                                              <--- while True:
+
+while True:
+    comand = view.get_command() == ["команда", {}]
+    match comand[0]:
+        case "1":
+            # {} = Выбот предмета( comand[1] )
+            # view.show_new_journal( {} )
+        case "2":
+
+
+
++ 7А
++ Математика
++ Список учеников с оценками
+
+
++ Открытие файла
++ Вызвать к доске ученика (по имени / фамилии) {"firstname": "Имя", "lastname": "Фамилия"}
++ На какую оценку ответил {int}
++ Выход
+
++ Добавление оценки ученику
+++ Добывление ученика
+++ Изменение ученика
+++ Перевести из класса в класс
+
+++ Добывление предмета
+++ Изменение оценки
+
+++ Поиск
++++++ id
++++++ предмет / ученик{ по имени / по фамилии }
+++ Удаление ученика
++++++ id
++++++ предмет / ученик{ по имени / по фамилии }
+
+++ Корзина для данных
+
+
+# subject в new_journal из database будет таким...
+[ { id: int, name: str, lastname: str, marks: [] },
+  { id: int, name: str, lastname: str, marks: [] } ]
+[ { str: int, str: str, str: str, str: list[ int, int, .. ] },
+  { str: int, str: str, str: str, str: list[ int, int, .. ] } ]
+
+if __name__ == "__main__":
+    pass
