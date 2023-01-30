@@ -11,12 +11,16 @@ menu_learner_choise = ["### Выберите действие: ###"]
 
 def main():
     # system("cls")  # Уже очищена
+
+    # TODO: Отдельное меню для класов
     menu_journal_choise.extend( model.journals_list() )
     command = view.input_command( menu_journal_choise )
     if command == 0:
          view.close(); return
     model.journal_open( menu_journal_choise[ command ] )
 
+
+    # TODO: Отдельное меню для журналов
     system("cls")
     # Журнал выбран, список предметов загружен
     menu_subject_choise.extend( model.subjects )
@@ -27,7 +31,13 @@ def main():
     model.subject_open( menu_subject_choise[ command ] )
 
     # Выбран предмет, список учеников загружен
-    menu_learner_choise.extend([ "Поставить оценку, за работу на уроке", "", "", "", "", "", "", "" ])
+    menu_learner_choise.extend([
+        "Поставить оценку, за работу на уроке",
+        "Вычеркунуть ошибочно поставленную оценку",
+        "Заменить или поставить новыю оценку",
+        "Добавить нового ученика на предмет (4)",
+        "Удалить ученика с предмета (автоматом)",
+        "Изменить имя ученика..." ])
     while True:
         system("cls")
         # Доступные действия
@@ -38,65 +48,36 @@ def main():
             view.close(); return
 
         # Добавить оценку
-        if command == 1:
+        elif command == 1:
             view.show_learner_and_mark( learner_name, model.journal[ model.subject_name ][ learner_name ] )
             # Запрос оценки
-            mark = view.mark_input()
-            model.mark_add( learner_name, mark )
+            model.mark_add( learner_name, view.mark_input() )
 
-        ##########################################################
-        #
-        # Не успеваю, ни фига...
-        #
-        ##########################################################
-
+        # Удалить оценку
         elif command == 2:
-            pass
+            view.show_learner_and_mark( learner_name, model.journal[ model.subject_name ][ learner_name ] )
+            # Запрос оценки
+            model.mark_del( learner_name, view.mark_input() )
 
+        # Заменить или Добавить оценку
         elif command == 3:
-            # найти (вызвать) ученика
-            search = view.search_request()          #               ex. /str/
-            result = model.search_pupil(search)     # inp. /str/    ex. /dict - ?/
-            view.show_pupil(result)                 # inp. /str/    ex. /list - ?/
+            view.show_learner_and_mark( learner_name, model.journal[ model.subject_name ][ learner_name ] )
+            # Запрос оценки
+            model.mark_upd( learner_name, view.mark_input() )
 
+        # Добавить ученика
         elif command == 4:
-            # поставить ученику оценку
-            search = view.search_request()          #               ex. /str/
-            result = model.search_pupil(search)     # inp. /str/    ex. /dict - ?/
-            model.mark_put(result, mark)            # inp. /dict, str/  ex.
-            view.mark_success()                     # inp.          ex. /str/ 'Оценка внесена в журнал'
+            # Запрос имени
+            model.learner_add( view.learner_input() )
 
+        # Удалить ученика
         elif command == 5:
-            # добавить ученика
-            new_pupil = view.create_pupil()         # inp.          ex. /dict -?/
-            model.school_db.append(new_pupil)       # inp. /dict/   ex. /list/
+            # Запрос имени
+            model.learner_del( learner_name )
 
+        # Изменить ученика
         elif command == 6:
-            # изменить ученика
-            search = view.search_request()          # inp.          ex. /str/
-            result = model.search_pupil(search)     # inp. /str/    ex. /list/
-            confirm = view.confirm_changes(result)  # inp. /list/   ex. /str/   y/n
-            if 'n' not in confirm:
-                new_pupil = view.create_pupil()     # inp.          ex. /dict/
-            response = model.change_pupil(result,confirm,new_pupil) # inp. /list, str, list/    ex. /str/
-            view.change_success(response)           # inp. /str/
-
-        elif command == 7:
-            # удалить ученика
-            search = view.search_request()          # inp.          ex. /str/
-            result = model.search_pupil(search)     # inp. /str/    ex. /list/
-            confirm = view.confirm_changes(result)  # inp. /list/   ex. /str/  y/n
-            response = model.delete_contact(result,confirm) # inp. /list, str/ ex. /str/
-            view.delete_success(response)           # inp. /str/    ex. /str/ 'Ученик удален'
-
-        elif command == 8:
-            # сохранить класс в файл с БД
-            model.save_db(path)                     # inp. /str/    ex. updated file
-            view.save_success()                     # inp.          ex. /str/ 'Файл сохранен'
-
-
-
-
+            learner_edit( learner_name, view.learner_input() )
 
 
 # Для тестирования

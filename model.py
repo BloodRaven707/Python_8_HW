@@ -2,6 +2,15 @@ from json import dump as json_dump, load as json_load
 from os.path import isfile
 from random import choice, randrange
 
+
+# # TODO:
+# 1. Работу с файлами отдельно
+# 2. Работу с каждой структурой отдельно по классам
+# 3. Вложенные структура (класс < предмет < ученик < оценка)
+# 4. Вынести функционал сохранения из общей логики и вызывать его отдельно
+# #
+
+
 # Globals_test
 subjects_test = { "Mathematics": "Математика", "Physics": "Физика", "Russian": "Русский", "Химия": "Chemistry" }  #, "": ""
 
@@ -18,7 +27,7 @@ subject_name = {}  # Наименование предмета
 learners = []      # Список учеников по именам
 learner_name = ""  # Выбранный ученик
 
-# Все журналы - Отдать список
+# Все журналы - Открыть и Отдать список
 def journals_list() -> list:
     global journals
     with open( "classes\\journals.txt", encoding="UTF-8" ) as f:
@@ -45,19 +54,8 @@ def journal_open( class_name: str = journal_name ) -> dict: # -> journal
     journal_name = class_name
     subjects = list(journal)
     return journal
-def journal_opend_txt( class_name: str = journal_name ) -> dict:
-    global journal
-    with open( f"classes\\{ class_name.upper() }.txt", encoding='UTF-8' ) as file:
-        for line in file:
-            subject_name, data = line.strip().split(';')
-            journals[subject_name] = {}
-            for subject in data.split(','):
-                learner = subject.split(':')
-                journals[subject_name][learner[0]] = learner[1].split(',')
-    return journal
-# print( "" ); print( "7A" ); print( *list(open_file( "7A" ).items()), sep="\n" ); print( "" )
 
-# Сохренение в файл журнала
+# Сохренение в файл журнала # json
 def journal_save( class_name: str = journal_name, data: dict = journal ):
     global journals
     file_name = f"classes\\{ class_name.upper() }.json"
@@ -69,7 +67,7 @@ def journal_save( class_name: str = journal_name, data: dict = journal ):
 def journal_get( journal = journal ) -> dict:
     return journal
 
-# Открыть предмет в журнале
+# Открыть предмет в выбранном журнале
 def subject_open( get_subject_name ) -> dict:
     global journal, subject_name
     subject_name = get_subject_name
@@ -83,21 +81,72 @@ def subject_get() -> dict: # -> { learner_name: [ int, int ], learner_name: [ in
     return journal[subject_name]
 # print( subject_get( 'Математика' ) )
 
+# Добавить Ученика
+def learner_add( learner_name, marks= [] ):
+  global journal, subject_name
+  journal[subject_name][learner_name] = marks
+  journal_save( journal_name, journal )
+  return journal[subject_name]
+# print ( list( learner_add( "Суслов" ) ) )
+# print ( list( learner_add( "Дуслов", [2, 3, 5] ) ) )
+
+# Удалить ученика
+def learner_del ( learner_name ):
+  global journal, subject_name
+  if learner_name in list ( journal[subject_name] ):
+    marks = journal[subject_name].pop( learner_name )
+  journal_save( journal_name, journal )
+  return journal[subject_name], marks
+# print ( list( learner_del( "Суслов" )[0] ) )
+# print ( list( learner_add( "Суслов" ) ) )
+
+# Изменит Ученика
+def learner_edit( learner_name, new ):
+  _, marks = learner_del( learner_name )
+  journal = learner_add( new, marks )
+  journal_save( journal_name, journal )
+  return journal[subject_name]
+# print ( list( learner_edit( "Дуслов", "Гуслов" ) ) )
+
 # Получить студента и оценики
 def marks_get( learner_name ) -> ( str, list ): # str, [ int, int, int, ... ]
-    global subject
-    return learner_name, subject[ learner_name ]
+  global journal, subject_name
+  return learner_name, journal[subject_name][learner_name]
+#print( marks_get( "Иванов" ) )
 
 # Добавить оценку
 def mark_add( learner_name: str, mark: int = 5, ) -> dict: # -> subject
     global journal, subject_name
-    marks = journal[subject_name][learner_name]
-    marks.append(mark)
-    journal[subject_name][learner_name] = marks
+    journal[subject_name][learner_name].append( mark )
     journal_save( journal_name, journal )
     return journal[subject_name]
+# print ( mark_add( "Иванов", 4 )["2"] )
+# print ( mark_add( "Иванов", 1 )["2"] )
+# print ( mark_add( "Иванов", 1 )["2"] )
 
+# Удалить оценку
+def mark_del( learner_name, mark ):
+  global journal, subject_name
+  if mark in journal[subject_name][learner_name]:
+    journal[subject_name][learner_name].pop( journal[subject_name][learner_name].index( mark ))
+    journal_save( journal_name, journal )
+  return journal
+# print ( mark_del( "Иванов", 1 )["2"] )
 
+# Земенить оценку или поставить новую
+def mark_upd( learner_name, mark, old = 1 ):
+  global journal, subject_name
+  for om in range( old, mark ):
+    if om in journal[subject_name][learner_name]:
+      mark_del( learner_name, om )
+      break
+  mark_add( learner_name, mark )
+  journal_save( journal_name, journal )
+  return journal
+# print ( mark_add( "Иванов", 1 )["2"] )
+# print ( mark_upd( "Иванов", 4 )["2"] )
+# print ( mark_upd( "Иванов", 3 )["2"] )
+# print ( mark_add( "Иванов", 4 )["2"] )
 
 
 

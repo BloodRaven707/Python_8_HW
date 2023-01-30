@@ -1,42 +1,45 @@
-from os.path import isfile
-from random import choice, randrange
-import json
+https://github.com/ANT050/Primer - view.py версия Антона
+https://github.com/Oleg-GH/Python-Seminars/tree/main/Sem2401_journal1 - controller.py версия Олега
+
+
+# Открытие файла журнала # txt
+def journal_opend_txt( class_name: str = journal_name ) -> dict:
+    global journal, journal_name
+    journal_name = class_name
+    with open( f"classes\\{ class_name.upper() }.txt", encoding='UTF-8' ) as file:
+        for line in file:
+            subject_name, data = line.strip().split(';')
+            journals[subject_name] = {}
+            for subject in data.split(','):
+                learner = subject.split(':')
+                journals[subject_name][learner[0]] = learner[1].split(',')
+    return journal
+# print( "" ); print( "7A" ); print( *list(open_file( "7A" ).items()), sep="\n" ); print( "" )
+
+
+def open_file( file_name ):
+    with open( file_name, encoding='UTF-8') as f:
+        clas = []
+        for i, line in enumerate(f):
+            name, subjects = line.strip().split('.')
+            clas.append([name,{}])
+            for subject in subjects.split(';'):
+                journ=subject.split(':')
+                clas[i][1][journ[0]] = journ[1].split(',')
+        print(clas)
+    return clas
 def save_file(file_name, clas):
     with open(file_name, 'w', encoding='UTF-8') as f:
         for i in range(len(clas)):
-            s = clas[i][0] + '.'
+            s = clas[i][0] + ';'    # .
             subj = []
             for k, v in clas[i][1].items():
                 subj.append(f"{k}:{','.join(v)}")
             s += ';'.join(subj)
             f.write(f'{s}')
-def print_class(clas, subj):#
-    for i in range(len(clas)):
-        s = clas[i][0] + ': '
-        #v = clas[i][1][subj]
-        s += f"[{', '.join(clas[i][1][subj])}]"
-        print(f'{s}')
-#def add_mark(clas, call_pupil, subj, eval):
-#    clas[call_pupil][subj] найти по индексу ученика, потом предмет, потом оценку
-def main_seminar():
-    clas = open_file('7b.txt')
-    subj = input('Введите название предмета: ')
-    #save_file('8b.txt', clas)
-    print_class(clas, subj)
-    call_pupil = ""
-    while call_pupil == "":
-        call_pupil = input('Кто пойдет к доске: ')
-        for s in clas:
-            if s[0] == call_pupil:
-                break
-            else:
-                print(f'{call_pupil} отсутствует в классе, нужно вызвать другого')
-            call_pupil = ""
 
-    evall = input('Оценка: ')
-    print(call_pupil, evall)
-    # Добавить оценку
-# main_seminar()
+
+# Универсальное открытие
 def open_file( file_name ):
     expansion = file_name.split(".")[-1]
     if expansion == "json":
@@ -49,30 +52,22 @@ def open_file( file_name ):
     return lts
     # print("\n", lts, "\n")
 # print( open_file( "t.json" ) )
+
+# Универсальное сохранение
 def save_file( file_name, data ):
     expansion = file_name.split(".")[-1]
     if expansion == "json":
         with open( file_name, "w", encoding="UTF-8" ) as f:
             json.dump( data, f )
-# data = open_file( "t.json" )
-# save_file( "tt.json", data )
-# print( data )
-def open_file( file_name ):
-    with open( file_name, encoding='UTF-8') as f:
-        clas = []
-        for i, line in enumerate(f):
-            name, subjects = line.strip().split('.')
-            clas.append([name,{}])
-            for subject in subjects.split(';'):
-                journ=subject.split(':')
-                clas[i][1][journ[0]] = journ[1].split(',')
-        print(clas)
-    return clas
+# data = open_file( "t.json" ); save_file( "tt.json", data ); print( data )
+
+
 def jurnal_open( class_name: str ) -> dict:
     global jurnal, jurnals
     if class_name in jurnals:
         jurnal = open_file(class_name)
         return jurnal; print( jurnal_open( jurnals[1] ) )
+
 def open_file( class_name: str ) -> dict: # Открытие файла
     global jurnal, jurnal_name, subjects
     new_jurnal = {}
@@ -216,9 +211,6 @@ def save_changes(journal: dict, path: str):
     with open(path, 'w', encoding='UTF-8') as file:
         file.write(file_string)
 
-https://github.com/ANT050/Primer - view.py версия Антона
-https://github.com/Oleg-GH/Python-Seminars/tree/main/Sem2401_journal1 - controller.py версия Олега
-
 
 def get_journal( journal_name: str = journal_name, new_journal_status: str = new_journal_status ) -> ( bool, int, dict):
  global journal
@@ -324,14 +316,10 @@ def add_mark( subject_name: str, person: str, mark: int ) - subject_lite
   else:
     return status, code, {}
 
-
-
-
  case 5:
      # добавить ученика
      new_pupil = view.create_pupil()
      model.school_db.append(new_pupil)
-
 
 ## Функция добавления ученика
 # -> ( bool, int, dict ) предмет с учениками
@@ -339,9 +327,6 @@ def add_mark( subject_name: str, person: str, mark: int ) - subject_lite
 def add_person( subject_name: str, person: str, marks: list = [] ) - subject_lite
   subject_lite[person] = marks
   return True, 0, subject_lite
-
-
-
 
 case 6:
     # изменить ученика
@@ -363,9 +348,6 @@ case 6:
 
   return status, code, subject
 
-
-
-
 case 7:
     # удалить ученика
     search = view.search_request()
@@ -381,8 +363,6 @@ def del_person( subject_name: str, person: ) -> bool, int, dict
   marks = subject[ person ]
   del subject[ person ]
   return True, 0, marks
-
-
 
 case 8:
     # сохранить класс в файл с БД
@@ -410,7 +390,6 @@ new_new_journal.append({"id": si, "name": subj_name, "data": []})
       new_journal = new_new_journal
       return True, 0, new_journal
 
-
 ## Формат хранения в файле
 ## model.new_journal
 [{id: int,
@@ -422,36 +401,13 @@ new_new_journal.append({"id": si, "name": subj_name, "data": []})
                    {}]},
  {}]
 
-## Формат - Кратко
+## Расширенный Формат - Кратко
 [{_:_,_:_,_:[{_:_,
                   _:_,
                   _:_,
                   _:[]},
                  {}]},
  {}]
-
-
-def save_file(file_name, clas):
-    with open(file_name, 'w', encoding='UTF-8') as f:
-        for i in range(len(clas)):
-            s = clas[i][0] + '.'
-            subj = []
-            for k, v in clas[i][1].items():
-                subj.append(f"{k}:{','.join(v)}")
-            s += ';'.join(subj)
-            f.write(f'{s}')
-
-
-def print_class(clas, subj): # "Название", {ученик: []}
-    for i in range(len(clas)):
-        s = clas[i][0] + ': '
-        #v = clas[i][1][subj]
-        s += f"[{', '.join(clas[i][1][subj])}]"
-        print(f'{s}')
-
-#def add_mark(clas, call_pupil, subj, eval):
-#    clas[call_pupil][subj] найти по индексу ученика, потом предмет, потом оценку
-
 
 dict = {subject: {"student": [marks], student: [marks], student: [marks], student: [marks], student: [marks] },
         subject: {{"firstname": "", "lastname": ""}: [marks], student: [marks], student: [marks], student: [marks], student: [marks] },
@@ -463,8 +419,6 @@ dict = {subject: {"student": [marks], student: [marks], student: [marks], studen
 
 [ученик, {предмет: [оценки], предмет: [оценки], предмет: [оценки]},
  ученик, {предмет: [оценки], предмет: [оценки], предмет: [оценки]}]
-
-
 
 reference_open = False
 reference_file = "путь к файлу"
@@ -495,13 +449,6 @@ while True:
             # view.show_new_journal( {} )
         case "2":
 
-
-
-+ 7А
-+ Математика
-+ Список учеников с оценками
-
-
 + Открытие файла
 + Вызвать к доске ученика (по имени / фамилии) {"firstname": "Имя", "lastname": "Фамилия"}
 + На какую оценку ответил {int}
@@ -530,6 +477,3 @@ while True:
   { id: int, name: str, lastname: str, marks: [] } ]
 [ { str: int, str: str, str: str, str: list[ int, int, .. ] },
   { str: int, str: str, str: str, str: list[ int, int, .. ] } ]
-
-if __name__ == "__main__":
-    pass

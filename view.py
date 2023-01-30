@@ -38,13 +38,13 @@ def input_lerner_command( menu: list, subject: dict ) -> ( int, str ):
         show_menu( menu )
         print( "\nПодсказка: дейсвие ученик. Пример ввода: \"1 1\". Не забудьте пробел..." )
         commands = input( 'Введите числовую команду: ' )
-        if commands == "0":
-            return 0, ""
+        if commands in ["0", "4"]:
+            return int(commands), ""
 
         if all([command.isdigit() for command in commands.split()]) and len( commands.split() ) == 2:
             command, learner_id = [ int(command) for command in commands.split() ]
             if 0 <= command <= len( menu ) and 1 <= learner_id <= len( subject ):
-                return command, list( subject )[ learner_id ]
+                return command, list( subject )[ learner_id - 1 ]
             else:
                 print( "Не верная команда..." )
 
@@ -55,7 +55,16 @@ def mark_input() -> int:
         if mark.isdigit() and mark in [ "1", "2", "3", "4", "5" ]:
             return int(mark)
         else:
-            print( f"Недьзя поставить оценку {mark}..." )
+            print( f"Нельзя поставить оценку {mark}..." )
+
+# Ввдод имени... не удовлетворяет требованиям... Но уже не до этого
+def learner_input() -> str:
+    while True:
+        name = input( "\nИмя нового ученика: " )
+        if name != "":
+            return name
+        else:
+            print( f"Именя не можеь быть равно \"{name}\"..." )
 
 
 def close():
